@@ -1,0 +1,87 @@
+name: Notify FeiShu
+on: [push]
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Set up jq
+        run: sudo apt-get install -y jq
+
+      - name: Debug git diff output
+        run: |
+          echo "Debugging git diff output:"
+          git log --oneline -2
+          git diff --name-status HEAD~1..HEAD
+
+      - name: Send notification to FeiShu
+        env:
+          FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
+        run: |
+          BRANCH=$(echo ${GITHUB_REF#refs/heads/})
+          TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
+
+          ADDED_FILES=$(git diff --name-status HEAD~1..HEAD | grep "^A" | wc -l)
+          MODIFIED_FILES=$(git diff --name-status HEAD~1..HEAD | grep "^M" | wc -l)
+          DELETED_FILES=$(git diff --name-status HEAD~1..HEAD | grep "^D" | wc -l)
+
+          echo "Added files: $ADDED_FILES"
+          echo "Modified files: $MODIFIED_FILES"
+          echo "Deleted files: $DELETED_FILES"
+
+          REPO_NAME=$(basename ${{ github.repository }})
+          COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+
+          PAYLOAD="$(jq -n \
+            --arg repo "$REPO_NAME" \
+            --arg branch "$BRANCH" \
+            --arg timestamp "$TIMESTAMP" \
+            --arg pusher "${{ github.actor }}" \
+            --arg added_files "$ADDED_FILES" \
+            --arg modified_files "$MODIFIED_FILES" \
+            --arg deleted_files "$DELETED_FILES" \
+            --arg commit_message "$(git log -1 --pretty=%B)" \
+            --arg commit_url "$COMMIT_URL" \
+            '{
+              msg_type: "interactive",
+              card: {
+                config: {
+                  wide_screen_mode: true
+                },
+                elements: [
+                  {
+                    tag: "div",
+                    text: {
+                      content: "**项目**: [\($repo)](\($commit_url))\n**分支**: \($branch)\n**时间**: \($timestamp)\n**提交者**: \($pusher)\n**新增文件数量**: \($added_files)\n**修改文件数量**: \($modified_files)\n**删除文件数量**: \($deleted_files)\n**提交说明**: \($commit_message)",
+                      tag: "lark_md"
+                    }
+                  },
+                  { 
+                    tag: "action",
+                    actions: [
+                      {
+                        tag: "button",
+                        text: {
+                          content: "查看提交详情",
+                          tag: "plain_text"
+                        },
+                        url: "\($commit_url)",
+                        type: "default"
+                      }
+                    ]
+                  }
+                ],
+                header: {
+                  title: {
+                    content: "代码变更通知",
+                    tag: "plain_text"
+                  }
+                }
+              }
+            }')"
+
+          curl -X POST -H 'Content-Type: application/json' -d "$PAYLOAD" "$FEISHU_WEBHOOK_URL"
