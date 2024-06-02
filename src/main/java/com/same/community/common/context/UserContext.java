@@ -1,17 +1,17 @@
 package com.same.community.common.context;
 
 
-import com.same.community.common.model.SameUser;
+import com.same.community.common.model.SameUserInfo;
 
 public class UserContext {
 
-    private static final ThreadLocal<SameUser> userHolder = new ThreadLocal<>();
+    private static final ThreadLocal<SameUserInfo> userHolder = new ThreadLocal<>();
 
-    public static void setUser(SameUser user) {
+    public static void setUser(SameUserInfo user) {
         userHolder.set(user);
     }
 
-    public static SameUser getUser() {
+    public static SameUserInfo getUser() {
         return userHolder.get();
     }
 
