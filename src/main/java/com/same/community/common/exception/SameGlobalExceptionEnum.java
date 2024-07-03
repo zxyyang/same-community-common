@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
  */
 @Getter
 @AllArgsConstructor
-public enum SameExceptionEnum {
+public enum SameGlobalExceptionEnum {
 
     /**
      * 未登录

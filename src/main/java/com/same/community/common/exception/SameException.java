@@ -14,19 +14,22 @@ package com.same.community.common.exception;
 
 
 
+import com.same.community.common.enums.ExceptionTypeEnum;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
+
+import java.io.Serializable;
 
 /**
  * 自定义异常
  */
 @Data
-public class SameException extends RuntimeException {
+public class SameException extends RuntimeException implements Serializable {
 
     private static final long serialVersionUID = 1601445855844246635L;
 
     private String msg;
-    private int code = 500;
+    private int code = ExceptionTypeEnum.SameException.getCode();
 
     public SameException(String msg) {
         super(msg);
@@ -39,11 +42,7 @@ public class SameException extends RuntimeException {
         this.code = exceptionCode.getServer()+exceptionCode.getCode();
     }
 
-    public SameException(SameExceptionEnum sameExceptionEnum){
-        super(sameExceptionEnum.getMessage());
-        this.msg = sameExceptionEnum.getMessage();
-        this.code = sameExceptionEnum.getCode();
-    }
+
 
     public SameException(String msg, Throwable e) {
         super(msg, e);

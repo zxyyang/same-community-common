@@ -1,0 +1,28 @@
+package com.same.community.common.exception;
+
+import com.same.community.common.enums.ExceptionTypeEnum;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import java.io.Serializable;
+
+/**
+ * @author Zixuan.Yang
+ * @date 2024/7/3 20:03
+ */
+@Data
+@AllArgsConstructor
+public class GlobalException extends RuntimeException implements Serializable {
+
+    private static final long serialVersionUID = 1601445855874246635L;
+
+    private String msg;
+    private int code = ExceptionTypeEnum.GlobalException.getCode();
+
+
+    public GlobalException(SameGlobalExceptionEnum sameExceptionEnum){
+        super(sameExceptionEnum.getMessage());
+        this.msg = sameExceptionEnum.getMessage();
+        this.code = sameExceptionEnum.getCode();
+    }
+}

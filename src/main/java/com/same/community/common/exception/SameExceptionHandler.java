@@ -1,17 +1,16 @@
 package com.same.community.common.exception;
 
-import com.same.community.common.bean.ResponseBean;
+import com.same.community.common.enums.ExceptionTypeEnum;
 import lombok.extern.slf4j.Slf4j;
-import com.same.community.common.feign.model.GlobalFeignException;
-import com.same.community.common.constants.AppConst;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.same.community.common.constants.SameGlobalConst.EXCEPTION_TYPE_KEY;
 
 /**
  * 异常处理器
@@ -22,35 +21,39 @@ import java.util.List;
 @Slf4j
 public class SameExceptionHandler {
 
-    private final static List<Integer> THROW_STATUS = Arrays.asList(HttpStatus.UNAUTHORIZED.value(), HttpStatus.FORBIDDEN.value(),HttpStatus.BAD_REQUEST.value(), HttpStatus.NOT_FOUND.value());
-
     /**
-     * 处理自定义异常
+     * 处理自定义业务异常
      */
     @ExceptionHandler(SameException.class)
-    public ResponseEntity<ResponseBean<String>> handleException(SameException e) {
-        if (THROW_STATUS.contains(e.getCode())) {
-            throw e;
-        }
-        return ResponseEntity.ok(ResponseBean.Error(e.getCode(), e.getMessage()));
+    public ResponseEntity<Map<String, Object>> handleException(SameException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        response.put("code", ex.getCode());
+        response.put(EXCEPTION_TYPE_KEY, ExceptionTypeEnum.SameException.getCode());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @ExceptionHandler(GlobalFeignException.class)
-    public ResponseBean<String> handleException(GlobalFeignException e) {
-        return AppConst.GLOBAL_EXCEPTION_STATUS == e.getHttpStatus()
-                ? ResponseBean.Error(e.getErrorCode(), e.getMessage())
-                : ResponseBean.Error(e.getMessage());
+    /**
+     * 自定义抛出的异常
+     */
+    @ExceptionHandler(GlobalException.class)
+    public ResponseEntity<Map<String, Object>> handleException(GlobalException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        response.put("code", ex.getCode());
+        response.put(EXCEPTION_TYPE_KEY, ExceptionTypeEnum.GlobalException.getCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getCode()));
     }
+
 
     @ExceptionHandler(Exception.class)
-    public ResponseBean<String> handleException(Exception e) {
-        log.error(e.getMessage(), e);
-        return ResponseBean.Error(e.getMessage());
+    public ResponseEntity<Map<String, Object>> handleException(Exception ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.put(EXCEPTION_TYPE_KEY, ExceptionTypeEnum.GlobalException.getCode());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseBean<String> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
-        log.error(e.getMessage(), e);
-        return ResponseBean.Error("文件大小超出限制");
-    }
+
 }
