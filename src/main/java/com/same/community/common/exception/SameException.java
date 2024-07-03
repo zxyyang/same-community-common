@@ -39,6 +39,12 @@ public class SameException extends RuntimeException {
         this.code = exceptionCode.getServer()+exceptionCode.getCode();
     }
 
+    public SameException(SameExceptionEnum sameExceptionEnum){
+        super(sameExceptionEnum.getMessage());
+        this.msg = sameExceptionEnum.getMessage();
+        this.code = sameExceptionEnum.getCode();
+    }
+
     public SameException(String msg, Throwable e) {
         super(msg, e);
         this.msg = msg;
