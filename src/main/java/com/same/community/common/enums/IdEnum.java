@@ -30,6 +30,8 @@ public enum IdEnum {
 
     CIRCLE_ID(15L),
 
+    SUBJECT_ID(16L),
+
     ;
 
     private final Long prefix;
