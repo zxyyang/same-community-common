@@ -1,2 +1,2 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.same.community.common.feign.configuration.FeignExceptionDecoder
+#org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+#com.same.community.common.feign.configuration.FeignExceptionDecoder
