@@ -25,7 +25,7 @@ public class SameExceptionHandler {
      * 处理自定义业务异常
      */
     @ExceptionHandler(SameException.class)
-    public ResponseEntity<Map<String, Object>> handleException(SameException ex) {
+    public ResponseEntity<Map<String, Object>> handleSameException(SameException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("message", ex.getMessage());
         response.put("code", ex.getCode());
@@ -38,7 +38,7 @@ public class SameExceptionHandler {
      * 自定义抛出的异常
      */
     @ExceptionHandler(GlobalException.class)
-    public ResponseEntity<Map<String, Object>> handleException(GlobalException ex) {
+    public ResponseEntity<Map<String, Object>> handleGlobalException(GlobalException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("message", ex.getMessage());
         response.put("code", ex.getCode());
