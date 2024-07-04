@@ -38,6 +38,8 @@ public class FeignExceptionDecoder extends ErrorDecoder.Default {
                     return new SameException(message, code);
                 case GlobalException:
                     return new GlobalException(message, code);
+                case Exception:
+                    return new Exception(message);
                 default:
                     return super.decode(methodKey, response);
             }

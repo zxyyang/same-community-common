@@ -10,6 +10,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ExceptionTypeEnum {
+    /**
+     * Exception
+     */
+    Exception(500, "Exception"),
 
     /**
      * SameException
@@ -19,7 +23,9 @@ public enum ExceptionTypeEnum {
     /**
      * GlobalException
      */
-    ,GlobalException(500, "GlobalException")
+    ,GlobalException(700, "GlobalException")
+
+
     ;
 
     private Integer code;
