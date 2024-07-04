@@ -1,5 +1,6 @@
 package com.same.community.common.meta.exception;
 
+import cn.hutool.core.exceptions.ExceptionUtil;
 import com.same.community.common.meta.enums.ExceptionTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -54,8 +55,8 @@ public class SameExceptionHandler {
     @ExceptionHandler({Exception.class,RuntimeException.class,Throwable.class})
     public ResponseEntity<Map<String, Object>> handleException(Exception ex) {
         Map<String, Object> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        response.put("code", HttpStatus.INTERNAL_SERVER_ERROR);
+        response.put("message", ExceptionUtil.stacktraceToString(ex));
+        response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.put(EXCEPTION_TYPE_KEY, ExceptionTypeEnum.Exception.getMessage());
         log.error("异常，错误信息：{}", ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
