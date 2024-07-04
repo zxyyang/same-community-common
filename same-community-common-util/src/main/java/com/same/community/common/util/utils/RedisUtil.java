@@ -3,8 +3,7 @@ package com.same.community.common.util.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -596,6 +595,18 @@ public class RedisUtil {
     }
 
 
+
+
+    public Set<ZSetOperations.TypedTuple<Object>> zSetRangWithScore(String key1, long start, long end) {
+        try {
+           return redisTemplate.opsForZSet().rangeWithScores(key1, start, end);
+        } catch (Exception e) {
+            log.error("redis操作异常", e);
+            return null;
+        }
+
+    }
+
     public Double zSetScore(String key1, String key2) {
         try {
             return redisTemplate.opsForZSet().score(key1, key2);
@@ -625,13 +636,36 @@ public class RedisUtil {
     }
 
 
-    public Set<ZSetOperations.TypedTuple<Object>> zSetRangWithScore(String key1, long start, long end) {
+
+
+    public Boolean setIfAbsent(String key, String value, long timeout) {
         try {
-           return redisTemplate.opsForZSet().rangeWithScores(key1, start, end);
+            return redisTemplate.opsForValue().setIfAbsent(key, value, timeout, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("redis操作异常", e);
             return null;
         }
+    }
+
+
+    public Set<String> scanTargetKeys(int redisCursorBatchLimit,int taskBatchLimit,String pattern) {
+        return redisTemplate.execute((RedisCallback<Set<String>>) connection -> {
+            Set<String> targetKeys = new HashSet<>();
+
+            // 利用游标的方法读取，keys方法严重消耗CPU，一般在生产环境禁用keys方法,
+            // 使用scan代替keys肯定会导致整个查询消耗的总时间变大，但不会影响redis服务卡顿，影响服务使用
+            // 注意Cursor一定不能关闭，在之前的版本中，这里Cursor需要手动关闭，但是从1.8.0开始，不能手动关闭！否则会报异常。
+            // match：key的正则表达式
+            // count：每次扫描的记录数。值越小，扫描次数越多、越耗时。建议设置在1000-10000
+            Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions()
+                    .match(pattern)
+                    .count(redisCursorBatchLimit)
+                    .build());
+            while (cursor.hasNext() && targetKeys.size() < taskBatchLimit) {
+                targetKeys.add(new String(cursor.next()));
+            }
+            return targetKeys;
+        });
 
     }
 
