@@ -19,15 +19,22 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class NacosServiceConfig implements SmartInitializingSingleton {
+@Order(1)
+public class NacosServiceConfig implements CommandLineRunner {
     @Autowired
     private NacosDiscoveryProperties discoveryProperties;
 
     @Autowired
     private NacosServiceManager nacosServiceManager;
 
+
     @Override
-    public void afterSingletonsInstantiated() {
+    public void run(String... args) throws Exception {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         String serviceName = discoveryProperties.getService();
         String group = discoveryProperties.getGroup();
         Instance instance = null;
