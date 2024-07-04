@@ -33,7 +33,7 @@ public class SameExceptionHandler {
         response.put("message", ex.getMessage());
         response.put("code", ex.getCode());
         response.put(EXCEPTION_TYPE_KEY, ExceptionTypeEnum.SameException.getMessage());
-        log.error("业务异常，错误信息：{}", ex.getMessage(), ex);
+        log.error("业务异常，错误代码：{},错误信息：{}",ex.getCode(), ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -46,7 +46,7 @@ public class SameExceptionHandler {
         response.put("message", ex.getMessage());
         response.put("code", ex.getCode());
         response.put(EXCEPTION_TYPE_KEY, ExceptionTypeEnum.GlobalException.getMessage());
-        log.error("全局异常，错误信息：{}", ex.getMessage(), ex);
+        log.error("全局异常，错误代码：{},错误信息：{}",ex.getCode(), ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getCode()));
     }
 
@@ -58,7 +58,7 @@ public class SameExceptionHandler {
         response.put("message",ex.getMessage());
         response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.put(EXCEPTION_TYPE_KEY, ExceptionTypeEnum.Exception.getMessage());
-        log.error("异常，错误信息：{}", ex.getMessage(), ex);
+        log.error("异常，错误代码：{},错误信息：{}",HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
