@@ -35,13 +35,9 @@ public class FeignExceptionDecoder implements ErrorDecoder {
             }
             switch (exceptionTypeEnumByCode) {
                 case SameException:
-                    SameException sameException = new SameException(message, code);
-                    sameException.setStackTrace((StackTraceElement[]) map.get("stackTrace"));
-                    return sameException;
+                    return new SameException(message, code);
                 case GlobalException:
-                    GlobalException globalException = new GlobalException(message, code);
-                    globalException.setStackTrace((StackTraceElement[]) map.get("stackTrace"));
-                    return globalException;
+                    return new GlobalException(message, code);
                 default:
                     return new RuntimeException("接口"+methodKey+"执行出错，错误代码："+code+"错误信息:"+message);
             }
