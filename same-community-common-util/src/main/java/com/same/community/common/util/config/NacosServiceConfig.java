@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-@Order(1)
 public class NacosServiceConfig implements CommandLineRunner {
     @Autowired
     private NacosDiscoveryProperties discoveryProperties;
