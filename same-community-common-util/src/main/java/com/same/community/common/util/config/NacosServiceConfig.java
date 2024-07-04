@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-@Order(1)
 public class NacosServiceConfig implements SmartInitializingSingleton {
     @Autowired
     private NacosDiscoveryProperties discoveryProperties;
