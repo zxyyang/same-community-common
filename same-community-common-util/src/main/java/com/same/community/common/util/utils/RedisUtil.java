@@ -1,4 +1,4 @@
-package com.same.community.common.util.config;
+package com.same.community.common.util.utils;
 
 
 import lombok.extern.slf4j.Slf4j;
