@@ -12,26 +12,27 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Zixuan.Yang
- * @date 2024/3/16 12:05
+ * 由Zixuan.Yang编写
+ * 日期：2024/3/16
  */
 @Component
 @Slf4j
+@Order(1) // 确保这个Runner在其他Runner之前执行
 public class NacosServiceConfig implements CommandLineRunner {
     @Autowired
     private NacosDiscoveryProperties discoveryProperties;
 
     @Autowired
     private NacosServiceManager nacosServiceManager;
+
     @Override
     public void run(String... args) throws Exception {
         String serviceName = discoveryProperties.getService();
         String group = discoveryProperties.getGroup();
-        Instance instance = nacosServiceManager.getNamingService().selectOneHealthyInstance(serviceName, group);
 
-        // 设置当前实例的权重
-//        double newWeight = 10.0; // 你希望设置的新权重
-//        instance.setWeight(newWeight);
+        Instance instance = new Instance();
+        instance.setServiceName(serviceName);
+        instance.setClusterName(group);
 
         // 判断当前操作系统是否是linux (线上环境)
         if (System.getProperty("os.name").toLowerCase().contains("linux")) {
@@ -42,12 +43,20 @@ public class NacosServiceConfig implements CommandLineRunner {
         }
 
         try {
-            // 更新实例权重信息
+            // 注册实例
             nacosServiceManager.getNamingService().registerInstance(serviceName, group, instance);
-            log.info("NACOS更新实例权重信息成功");
+            log.info("NACOS实例注册成功");
+
+            // 获取一个健康的实例
+            Instance healthyInstance = nacosServiceManager.getNamingService().selectOneHealthyInstance(serviceName, group);
+
+            // 设置当前实例的权重（如果需要）
+            // double newWeight = 10.0; // 你希望设置的新权重
+            // healthyInstance.setWeight(newWeight);
+
+            log.info("NACOS获取健康实例成功: {}", healthyInstance);
         } catch (NacosException e) {
-            // 异常
-            log.error("NACOS更新实例识别", e);
+            log.error("NACOS操作失败", e);
         }
     }
 }
