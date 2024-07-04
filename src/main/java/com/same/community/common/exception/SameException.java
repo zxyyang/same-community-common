@@ -29,7 +29,7 @@ public class SameException extends RuntimeException implements Serializable {
     private static final long serialVersionUID = 1601445855844246635L;
 
     private String msg;
-    private int code = ExceptionTypeEnum.SameException.getCode();
+    private int code ;
 
     public SameException(String msg) {
         super(msg);

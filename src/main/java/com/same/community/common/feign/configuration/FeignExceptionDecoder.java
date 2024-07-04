@@ -17,7 +17,7 @@ import static com.same.community.common.constants.SameGlobalConst.EXCEPTION_TYPE
 
 @Slf4j
 @Configuration
-public class FeignExceptionDecoder extends ErrorDecoder.Default {
+public class FeignExceptionDecoder implements ErrorDecoder {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -35,13 +35,15 @@ public class FeignExceptionDecoder extends ErrorDecoder.Default {
             }
             switch (exceptionTypeEnumByCode) {
                 case SameException:
-                    return new SameException(message, code);
+                    SameException sameException = new SameException(message, code);
+                    sameException.setStackTrace((StackTraceElement[]) map.get("stackTrace"));
+                    return sameException;
                 case GlobalException:
-                    return new GlobalException(message, code);
-                case Exception:
-                    return new Exception(message);
+                    GlobalException globalException = new GlobalException(message, code);
+                    globalException.setStackTrace((StackTraceElement[]) map.get("stackTrace"));
+                    return globalException;
                 default:
-                    return super.decode(methodKey, response);
+                    return new RuntimeException("接口"+methodKey+"执行出错，错误代码："+code+"错误信息:"+message);
             }
 
         } catch (Exception ex) {
