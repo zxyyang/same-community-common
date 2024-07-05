@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Zixuan.Yang
- * @date 2024/7/5 16:52
+ * Swagger配置类
  */
 @Configuration
 @EnableSwagger2
@@ -30,20 +29,21 @@ public class SwaggerConfig {
                 // 自行修改为自己的包路径
                 .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
                 .paths(PathSelectors.any())
-                .build();
+                .build()
+                .securitySchemes(securitySchemes());
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("api文档")
-                .description("restful 风格接口")
+                .title("API文档")
+                .description("RESTful 风格接口")
                 .version("1.0")
                 .build();
     }
 
     private List<ApiKey> securitySchemes() {
         // 设置请求头信息
-        List<ApiKey> result = new ArrayList<ApiKey>();
+        List<ApiKey> result = new ArrayList<>();
         ApiKey apiKey = new ApiKey("Authorization", "Authorization", "header");
         result.add(apiKey);
         return result;
