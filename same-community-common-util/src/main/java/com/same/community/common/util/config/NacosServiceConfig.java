@@ -26,7 +26,6 @@ public class NacosServiceConfig implements CommandLineRunner {
     @Autowired
     private NacosServiceManager nacosServiceManager;
 
-
     @Override
     public void run(String... args) throws Exception {
         try {
@@ -36,7 +35,7 @@ public class NacosServiceConfig implements CommandLineRunner {
         }
         String serviceName = discoveryProperties.getService();
         String group = discoveryProperties.getGroup();
-        Instance instance = null;
+        Instance instance;
         try {
             instance = nacosServiceManager.getNamingService().selectOneHealthyInstance(serviceName, group);
         } catch (NacosException e) {
@@ -44,25 +43,23 @@ public class NacosServiceConfig implements CommandLineRunner {
             throw new RuntimeException(e);
         }
 
-        // 设置当前实例的权重
-//        double newWeight = 10.0; // 你希望设置的新权重
-//        instance.setWeight(newWeight);
-
-        // 判断当前操作系统是否是linux (线上环境)
         if (System.getProperty("os.name").toLowerCase().contains("linux")) {
             instance.setIp(IpUtil.externalNetworkIp());
+            try {
+                nacosServiceManager.getNamingService().registerInstance(serviceName, group, instance);
+                log.info("NACOS更新实例权重信息成功");
+            } catch (NacosException e) {
+                log.error("NACOS更新实例失败", e);
+            }
         } else {
-            // 本地环境
             instance.setIp("127.0.0.1");
-        }
-
-        try {
-            // 更新实例权重信息
-            nacosServiceManager.getNamingService().registerInstance(serviceName, group, instance);
-            log.info("NACOS更新实例权重信息成功");
-        } catch (NacosException e) {
-            // 异常
-            log.error("NACOS更新实例失败", e);
+            try {
+                nacosServiceManager.getNamingService().deregisterInstance(serviceName, group, instance.getIp(), instance.getPort());
+                log.info("本地环境，实例已下线");
+            } catch (NacosException e) {
+                log.error("本地环境实例下线失败", e);
+            }
         }
     }
 }
+
