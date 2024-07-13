@@ -19,12 +19,12 @@ public class ResponseBean<T> implements Serializable {
 
     private T data;
 
-    private ResponseBean(Integer code, String msg) {
+    public ResponseBean(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
     }
 
-    private ResponseBean(Integer code, String msg, T data) {
+    public ResponseBean(Integer code, String msg, T data) {
         this.code = code;
         this.msg = msg;
         this.data = data;

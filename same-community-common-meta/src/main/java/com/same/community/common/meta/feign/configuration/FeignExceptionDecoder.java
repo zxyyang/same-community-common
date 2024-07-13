@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.same.community.common.meta.enums.ExceptionTypeEnum;
 import com.same.community.common.meta.exception.GlobalException;
 import com.same.community.common.meta.exception.SameException;
+import feign.RequestInterceptor;
 import feign.Response;
 import feign.Util;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.validation.ConstraintViolation;
@@ -30,6 +32,11 @@ public class FeignExceptionDecoder implements ErrorDecoder {
         log.info("异常处理器添加注入成功！");
     }
 
+    @Bean
+    public RequestInterceptor requestInterceptor() {
+        return requestTemplate -> requestTemplate.header("X-Feign-Client", "true");
+    }
+
     @Override
     public Exception decode(String methodKey, Response response) {
         try {
@@ -44,10 +51,7 @@ public class FeignExceptionDecoder implements ErrorDecoder {
             }
             switch (exceptionTypeEnumByCode) {
                 case SameException:
-                    // 如果HTTP状态码是200，但内容包含SameException，则抛出SameException
-                    if (response.status() == 200) {
-                        return new SameException(message, code);
-                    }
+                    return new SameException(message, code);
                 case GlobalException:
                     return new GlobalException(message, code);
                 default:

@@ -1,6 +1,7 @@
 package com.same.community.common.meta.exception;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
+import com.same.community.common.meta.bean.ResponseBean;
 import com.same.community.common.meta.enums.ExceptionTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,11 +26,19 @@ import static com.same.community.common.meta.constants.SameGlobalConst.EXCEPTION
 @Slf4j
 public class SameExceptionHandler {
 
+    private boolean isFeignClientRequest(HttpServletRequest request) {
+        return request.getHeader("X-Feign-Client") != null;
+    }
+
     /**
      * 处理自定义业务异常
      */
     @ExceptionHandler(SameException.class)
-    public ResponseEntity<Map<String, Object>> handleSameException(SameException ex) {
+    public ResponseEntity handleSameException(SameException ex,HttpServletRequest request) {
+        if (!isFeignClientRequest(request)){
+            //如果是Feign调用就直接处理成200返回体
+            return new ResponseEntity<>(ResponseBean.Error(ex.getCode(), ex.getMsg()),HttpStatus.OK);
+        }
         Map<String, Object> response = new HashMap<>();
         response.put("message", ex.getMessage());
         response.put("code", ex.getCode());
