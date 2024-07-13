@@ -44,16 +44,20 @@ public class FeignExceptionDecoder implements ErrorDecoder {
             }
             switch (exceptionTypeEnumByCode) {
                 case SameException:
-                    return new SameException(message, code);
+                    // 如果HTTP状态码是200，但内容包含SameException，则抛出SameException
+                    if (response.status() == 200) {
+                        return new SameException(message, code);
+                    }
                 case GlobalException:
                     return new GlobalException(message, code);
                 default:
                     return new RuntimeException("接口"+methodKey+"执行出错，错误代码："+code+"错误信息:"+message);
             }
-
         } catch (Exception ex) {
             log.error("feign调用-解析异常失败，错误信息：{}", ex.getMessage(), ex);
             return new RuntimeException("服务内部错误");
         }
     }
+
+
 }

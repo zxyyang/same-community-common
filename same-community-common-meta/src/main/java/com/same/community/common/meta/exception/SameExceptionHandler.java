@@ -34,7 +34,7 @@ public class SameExceptionHandler {
         response.put("code", ex.getCode());
         response.put(EXCEPTION_TYPE_KEY, ExceptionTypeEnum.SameException.getMessage());
         log.error("业务异常，错误代码：{},错误信息：{}",ex.getCode(), ex.getMessage(), ex);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(999));
     }
 
     /**
