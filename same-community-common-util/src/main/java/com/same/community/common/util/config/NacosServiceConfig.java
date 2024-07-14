@@ -52,13 +52,13 @@ public class NacosServiceConfig implements CommandLineRunner {
                 log.error("NACOS更新实例失败", e);
             }
         } else {
-//            instance.setIp("127.0.0.1");
-//            try {
-//                nacosServiceManager.getNamingService().deregisterInstance(serviceName, group, instance.getIp(), instance.getPort());
-//                log.info("本地环境，实例已下线");
-//            } catch (NacosException e) {
-//                log.error("本地环境实例下线失败", e);
-//            }
+            instance.setIp("127.0.0.1");
+            try {
+                nacosServiceManager.getNamingService().deregisterInstance(serviceName, group, instance.getIp(), instance.getPort());
+                log.info("本地环境，实例已下线");
+            } catch (NacosException e) {
+                log.error("本地环境实例下线失败", e);
+            }
         }
     }
 }
