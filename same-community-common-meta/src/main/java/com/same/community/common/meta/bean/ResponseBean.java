@@ -1,5 +1,6 @@
 package com.same.community.common.meta.bean;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -9,20 +10,30 @@ import java.io.Serializable;
  * @date 2024/3/10 19:57
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseBean<T> implements Serializable {
 
     private static final long serialVersionUID = -2482451601325334949L;
 
-    private Integer code;
+    private Integer code ;
 
     private String msg;
 
     private T data;
 
+    private String exceptionType;
+
     public ResponseBean(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
     }
+    public ResponseBean(Integer code, String msg,String exceptionType) {
+        this.code = code;
+        this.msg = msg;
+        this.exceptionType = exceptionType;
+    }
+
+
 
     public ResponseBean(Integer code, String msg, T data) {
         this.code = code;
@@ -65,6 +76,10 @@ public class ResponseBean<T> implements Serializable {
      */
     public static <T> ResponseBean<T> Error(Integer code, String msg) {
         return new ResponseBean<>(code, msg);
+    }
+
+    public static <T> ResponseBean<T> Error(Integer code, String msg,String exceptionType) {
+        return new ResponseBean<>(code, msg,exceptionType);
     }
 
 }

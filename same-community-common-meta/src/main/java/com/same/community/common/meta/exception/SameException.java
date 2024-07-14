@@ -38,7 +38,7 @@ public class SameException extends RuntimeException implements Serializable {
     public SameException(SameExceptionApi exceptionCode) {
         super(exceptionCode.getMessage());
         this.msg = exceptionCode.getMessage();
-        this.code = exceptionCode.getServer()+exceptionCode.getCode();
+        this.code = Integer.valueOf(exceptionCode.getServer()+""+exceptionCode.getCode());
     }
 
 

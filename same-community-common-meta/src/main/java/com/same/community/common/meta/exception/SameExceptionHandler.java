@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,42 +35,24 @@ public class SameExceptionHandler {
      * 处理自定义业务异常
      */
     @ExceptionHandler(SameException.class)
-    public ResponseEntity handleSameException(SameException ex,HttpServletRequest request) {
-        if (!isFeignClientRequest(request)){
-            //如果是Feign调用就直接处理成200返回体
-            return new ResponseEntity<>(ResponseBean.Error(ex.getCode(), ex.getMsg()),HttpStatus.OK);
+    public ResponseBean handleSameException(SameException ex,HttpServletRequest request, HttpServletResponse response) {
+        if (isFeignClientRequest(request)){
+            response.setStatus(900);
+        }else {
+            response.setStatus(HttpStatus.OK.value());
         }
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        response.put("code", ex.getCode());
-        response.put(EXCEPTION_TYPE_KEY, ExceptionTypeEnum.SameException.getMessage());
         log.error("业务异常，错误代码：{},错误信息：{}",ex.getCode(), ex.getMessage(), ex);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(999));
+        return  new ResponseBean<>(ex.getCode(),ex.getMsg(),ExceptionTypeEnum.SameException.getMessage());
     }
 
     /**
      * 自定义抛出的异常
      */
     @ExceptionHandler(GlobalException.class)
-    public ResponseEntity<Map<String, Object>> handleGlobalException(GlobalException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        response.put("code", ex.getCode());
-        response.put(EXCEPTION_TYPE_KEY, ExceptionTypeEnum.GlobalException.getMessage());
+    public ResponseBean handleGlobalException(GlobalException ex,HttpServletResponse response) {
+        response.setStatus(ex.getCode());
         log.error("全局异常，错误代码：{},错误信息：{}",ex.getCode(), ex.getMessage(), ex);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getCode()));
-    }
-
-
-
-    @ExceptionHandler({Exception.class,RuntimeException.class,Throwable.class})
-    public ResponseEntity<Map<String, Object>> handleException(Exception ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("message",ex.getMessage());
-        response.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.put(EXCEPTION_TYPE_KEY, ExceptionTypeEnum.Exception.getMessage());
-        log.error("异常，错误代码：{},错误信息：{}",HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), ex);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return  new ResponseBean<>(ex.getCode(),ex.getMsg(),ExceptionTypeEnum.GlobalException.getMessage());
     }
 
 
