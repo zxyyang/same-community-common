@@ -1,5 +1,6 @@
 package com.same.community.common.meta.feign.configuration;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.same.community.common.meta.bean.ResponseBean;
 import com.same.community.common.meta.enums.ExceptionTypeEnum;
@@ -37,8 +38,7 @@ public class FeignExceptionDecoder implements ErrorDecoder {
             }
 
             String content = Util.toString(response.body().asReader(StandardCharsets.UTF_8));
-            ObjectMapper objectMapper = new ObjectMapper();
-            ResponseBean responseBean = objectMapper.readValue(content, ResponseBean.class);
+            ResponseBean responseBean = JSONObject.parseObject(content,ResponseBean.class);
             String exceptionType = responseBean.getExceptionType();
             ExceptionTypeEnum exceptionTypeEnumByCode = ExceptionTypeEnum.getExceptionTypeEnumByMessage(exceptionType);
 
@@ -56,7 +56,7 @@ public class FeignExceptionDecoder implements ErrorDecoder {
             }
         } catch (IOException ex) {
             log.error("feign调用-解析异常失败，错误信息：{}", ex.getMessage(), ex);
-            return new RuntimeException("服务内部错误");
+            return new RuntimeException("错误解析失败，服务内部错误");
         }
     }
 }
