@@ -32,7 +32,7 @@ public class SameExceptionHandler {
     @ExceptionHandler(GlobalException.class)
     @ResponseBody
     public ResponseBean handleGlobalException(GlobalException ex, HttpServletResponse response) {
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setStatus(ex.getCode());
         log.error("全局异常，错误代码：{}, 错误信息：{}", ex.getCode(), ex.getMessage(), ex);
         return new ResponseBean<>(ex.getCode(), ex.getMsg(), ExceptionTypeEnum.GlobalException.getMessage());
     }

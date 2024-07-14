@@ -22,15 +22,8 @@ public enum SameGlobalExceptionEnum {
      */
     NO_PERMISSION(HttpStatus.FORBIDDEN.value(), "无权限"),
 
-    /**
-     * 参数错误
-     */
-    PARAM_ERROR(HttpStatus.BAD_REQUEST.value(), "参数错误"),
 
-    /**
-     * NOT_FOUND
-     */
-    NOT_FOUND(HttpStatus.NOT_FOUND.value(), "NOT_FOUND"),
+
 
 
     ;
