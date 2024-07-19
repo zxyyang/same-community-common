@@ -19,4 +19,8 @@ public class UserContext {
         userHolder.remove();
     }
 
+    public static boolean isLogin() {
+        return userHolder.get() != null;
+    }
+
 }
