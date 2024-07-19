@@ -36,9 +36,15 @@ public class FeignExceptionDecoder implements ErrorDecoder {
             if (response.body() == null) {
                 return new RuntimeException("服务内部错误");
             }
+            ResponseBean responseBean =null;
+            String content = null;
+            try {
+                 content = Util.toString(response.body().asReader(StandardCharsets.UTF_8));
+                 responseBean = JSONObject.parseObject(content,ResponseBean.class);
+            }catch (Exception e){
+                return new RuntimeException("服务调用报错："+content);
+            }
 
-            String content = Util.toString(response.body().asReader(StandardCharsets.UTF_8));
-            ResponseBean responseBean = JSONObject.parseObject(content,ResponseBean.class);
             String exceptionType = responseBean.getExceptionType();
             ExceptionTypeEnum exceptionTypeEnumByCode = ExceptionTypeEnum.getExceptionTypeEnumByMessage(exceptionType);
 
@@ -54,7 +60,7 @@ public class FeignExceptionDecoder implements ErrorDecoder {
                 default:
                     return new RuntimeException("接口" + methodKey + "执行出错，错误代码：" + responseBean.getCode() + "错误信息:" + responseBean.getMsg());
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             log.error("feign调用-解析异常失败，错误信息：{}", ex.getMessage(), ex);
             return new RuntimeException("错误解析失败，服务内部错误");
         }

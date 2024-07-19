@@ -37,7 +37,7 @@ public class SameExceptionHandler {
         return new ResponseBean<>(ex.getCode(), ex.getMsg(), ExceptionTypeEnum.GlobalException.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler({Exception.class,RuntimeException.class})
     @ResponseBody
     public ResponseBean handleAllExceptions(Exception ex, HttpServletResponse response) {
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
