@@ -2,6 +2,7 @@ package com.same.community.common.util.aop.asp;
 
 import com.same.community.common.meta.context.UserContext;
 import com.same.community.common.util.aop.CheckUserContext;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -16,8 +17,7 @@ import org.springframework.stereotype.Component;
 public class CheckUserContextAspect {
 
     @Before("@annotation(checkUserContext)")
-    public Object processSensitiveFields(ProceedingJoinPoint joinPoint, CheckUserContext checkUserContext) throws Throwable {
+    public void processSensitiveFields(JoinPoint joinPoint, CheckUserContext checkUserContext) throws Throwable {
         UserContext.checkLogin();
-        return joinPoint.proceed();
     }
 }
