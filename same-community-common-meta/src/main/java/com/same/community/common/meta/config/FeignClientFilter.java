@@ -34,9 +34,6 @@ public class FeignClientFilter extends OncePerRequestFilter {
     @Value("${same.debug.userinfo.uid:123}")
     private Long uid;
 
-    FeignClientFilter(){
-        log.info("本地调试用户状态：{},用户信息：{}",isOpen,uid);
-    }
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
