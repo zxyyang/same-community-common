@@ -29,14 +29,18 @@ import java.util.Objects;
 public class FeignClientFilter extends OncePerRequestFilter {
 
     @Value("${same.debug.userinfo.open:false}")
-    private boolean userInfo;
+    private boolean isOpen;
 
     @Value("${same.debug.userinfo.uid:123}")
     private Long uid;
 
+    FeignClientFilter(){
+        log.info("本地调试用户状态：{},用户信息：{}",isOpen,uid);
+    }
+
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        if (userInfo) {
+        if (isOpen) {
             // 如果是本地调试环境，注入默认的用户信息
             log.info("本地调试环境，注入默认的用户信息:{}",uid);
             SameUserInfo defaultUser = new SameUserInfo();
