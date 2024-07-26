@@ -28,24 +28,19 @@ import java.util.Objects;
 @Component
 public class FeignClientFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private Environment environment;
+    @Value("${same.debug.userinfo.open:false}")
+    private boolean userInfo;
 
-    private boolean isLocalProfileActive;
-    @PostConstruct
-    public void init() {
-        String[] activeProfiles = environment.getActiveProfiles();
-        isLocalProfileActive = activeProfiles != null && activeProfiles.length >0  && Arrays.asList(activeProfiles).contains("local");
-    }
+    @Value("${same.debug.userinfo.uid:123}")
+    private Long uid;
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-
-        if (isLocalProfileActive) {
+        if (userInfo) {
             // 如果是本地调试环境，注入默认的用户信息
-            log.debug("本地调试环境，注入默认的用户信息:123");
+            log.info("本地调试环境，注入默认的用户信息:{}",uid);
             SameUserInfo defaultUser = new SameUserInfo();
-            defaultUser.setUid(123L);
+            defaultUser.setUid(uid);
             UserContext.setUser(defaultUser);
         }else {
             String userJson = request.getHeader(AppConst.USER_CONTEXT);
