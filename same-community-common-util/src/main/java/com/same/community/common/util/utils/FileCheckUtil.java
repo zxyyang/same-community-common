@@ -1,5 +1,6 @@
 package com.same.community.common.util.utils;
 
+import com.same.community.common.meta.exception.SameException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -41,14 +42,14 @@ public class FileCheckUtil {
 
         if (imageSuffix.stream().anyMatch(suffix -> suffix.equalsIgnoreCase(type))) {
             if (size > (imageMaxSize * len)) {
-                throw new RuntimeException("上传图片文件超出规定大小");
+                throw new SameException("上传图片文件超出规定大小");
             }
         } else if (videoSuffix.stream().anyMatch(suffix -> suffix.equalsIgnoreCase(type))) {
             if (size > (videoMaxSize * len)) {
-                throw new RuntimeException("上传视频文件超出规定大小");
+                throw new SameException("上传视频文件超出规定大小");
             }
         } else {
-            throw new RuntimeException("不支持的文件类型：" + contentType);
+            throw new SameException("不支持的文件类型：" + contentType);
         }
     }
 
@@ -63,10 +64,10 @@ public class FileCheckUtil {
 
         if (imageSuffix.contains(type)) {
             if (size > (imageMaxSize * len)) {
-                throw new RuntimeException("上传图片文件超出规定大小");
+                throw new SameException("上传图片文件超出规定大小");
             }
         } else {
-            throw new RuntimeException("不支持的图片文件类型：" + contentType);
+            throw new SameException("不支持的图片文件类型：" + contentType);
         }
     }
 
@@ -81,10 +82,10 @@ public class FileCheckUtil {
 
         if (videoSuffix.contains(type)) {
             if (size > (videoMaxSize * len)) {
-                throw new RuntimeException("上传视频文件超出规定大小");
+                throw new SameException("上传视频文件超出规定大小");
             }
         } else {
-            throw new RuntimeException("不支持的视频文件类型：" + contentType);
+            throw new SameException("不支持的视频文件类型：" + contentType);
         }
     }
 
@@ -105,7 +106,7 @@ public class FileCheckUtil {
         } else if (isDocumentContentType(contentType)) {
             validateSize(size, documentMaxSize * len, "文档");
         } else {
-            throw new RuntimeException("不支持的文件类型：" + contentType);
+            throw new SameException("不支持的文件类型：" + contentType);
         }
     }
 
@@ -121,7 +122,7 @@ public class FileCheckUtil {
 
     private void validateSize(long fileSize, long maxSize, String fileType) {
         if (fileSize > maxSize) {
-            throw new RuntimeException("上传" + fileType + "文件超出规定大小");
+            throw new SameException("上传" + fileType + "文件超出规定大小");
         }
     }
 }
