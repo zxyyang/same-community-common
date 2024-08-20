@@ -1,5 +1,6 @@
 package com.same.community.common.util.utils;
 
+import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.same.community.common.meta.context.RequestContext;
 import com.same.community.common.meta.model.IP;
@@ -149,15 +150,18 @@ public class IpUtil {
 
     public static String getIpAddr(String remote) {
         String ipAddr = "未知";
-        IP geography = findGeography(remote);
-        if (Objects.isNull(geography)) {
-            return ipAddr;
+        try {
+            IP geography = findGeography(remote);
+            if (Objects.isNull(geography)) {
+                return ipAddr;
+            }
+            ipAddr = geography.getProvince();
+            if (StrUtil.isBlank(ipAddr)) {
+                ipAddr = "未知";
+            }
+        }catch (Exception e){
+         log.error(ExceptionUtil.stacktraceToString(e));
         }
-        ipAddr = geography.getProvince();
-        if (StrUtil.isBlank(ipAddr)) {
-            ipAddr = "未知";
-        }
-
         return ipAddr;
     }
     public static String getIpAddr(HttpServletRequest request) {
