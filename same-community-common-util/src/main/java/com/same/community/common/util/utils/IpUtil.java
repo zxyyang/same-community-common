@@ -30,7 +30,7 @@ public class IpUtil {
     private static final String LOCALHOST_IP = "0:0:0:0:0:0:0:1";
     private static final String IP_DATA_PATH = "/ip/ip2region.xdb";
 
-    public static final String EXTERNAL_NETWORK_API_URL = "http://api.ipify.org";
+    public static final String EXTERNAL_NETWORK_API_URL = "https://icanhazip.com/";
 
     private static Searcher _searcher = null;
 
