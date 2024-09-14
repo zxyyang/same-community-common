@@ -258,7 +258,20 @@ public class IpUtil {
      * @return {@code String}
      */
     public static String externalNetworkIp() {
-        return HttpClientUtils.doGet(EXTERNAL_NETWORK_API_URL, null);
+        //去掉空格回车
+        String ipStr = HttpClientUtils.doGet(EXTERNAL_NETWORK_API_URL, null);
+
+        if (ipStr != null) {
+            // 去掉可能存在的空格和换行符
+            ipStr = ipStr.trim();
+
+            // 如果需要进一步处理响应，比如解析JSON，则在这里进行
+            // 假设API返回的是纯文本格式的IP地址
+        } else {
+            // 处理请求失败的情况
+            return "Unable to retrieve IP address";
+        }
+        return ipStr;
     }
 
     public static void main(String[] args) {
